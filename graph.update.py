@@ -1,6 +1,5 @@
 # Libraries and modules
 import pygame
-import os
 import math
 import random
 import matplotlib.pyplot as plt
@@ -9,7 +8,6 @@ import matplotlib.pyplot as plt
 pygame.init()
 
 # Definition of display
-#os.environ["SDL_VIDEO_WINDOW_POS"] = f"{-1920}, 0"
 DISPLAY_X, DISPLAY_Y = 800, 800
 DISPLAY = pygame.display.set_mode((DISPLAY_X, DISPLAY_Y))
 CAPTION = pygame.display.set_caption("Ernest Rutherford sitt gullfolie-eksperiment")
@@ -19,12 +17,6 @@ FONT = pygame.font.SysFont("comicsans", 16)
 BLACK = (0, 0, 0)
 GOLD  = (255, 215, 0)
 WHITE = (255, 255, 255)
-BROWN = (150, 75, 0)
-PURPLE = (160, 32, 240)
-RED = (255, 0, 0)
-GREEN = (0, 255, 0)
-ORANGE = (255, 140, 0)
-BLUE = (0, 0, 255)
 
 # Class
 class Particle:
@@ -137,26 +129,20 @@ def main():
     clock = pygame.time.Clock()
 
     gold_particle = Particle(0, 0, 0, 5, 0, 1.26e-17, GOLD)
-    # alfa_colors = [BLUE, ORANGE, GREEN, RED, PURPLE, BROWN]
     particles = [gold_particle]
 
-    alfa_antall = [0] * 180
-    spredningvinkler = []
+    alfa_antall = [0] * 181
+    spredningsvinkler = []
     for number in range(181):
-        spredningvinkler.append(number)
+        spredningsvinkler.append(number)
 
     while(running):
         # Startvalues
-        alfa_startposition_y = random.uniform(-0.5e-13, 0.5e-13)
+        alfa_startposition_y = random.uniform(-3e-13, 5e-13)
         alfa_startvelocity_x = 1.5e7
-        global alfa_particle
         alfa_particle = Particle(-5e-13, alfa_startposition_y, alfa_startvelocity_x, 1, 6.64e-27, 3.20e-19, WHITE)
         particles.append(alfa_particle)
         
-        figure, ax = plt.subplots()
-        ax.set_xlim(0, 180)
-        ax.set_ylim(0, 10)
-
         # The simulation
         while(alfa_particle.insideDisplay()):
             # Updating of display
@@ -171,21 +157,19 @@ def main():
             pygame.display.update()
             clock.tick(1000)
         
-        # The graph
-        alfa_antall.insert(alfa_particle.spredningsVinkel()[1], alfa_antall[alfa_particle.spredningsVinkel()[1]] + 1)
-        line, = ax.plot([spredningvinkler], [alfa_antall])
-        plt.draw()
-        #plt.plot(spredningvinkler, alfa_antall)
-        plt.title("Forholdet mellom antall utsendte alfapartikler og tilhørende spredningsvinkel", fontsize = 9)
-        plt.xlabel("x: vinkel (θ)")
-        plt.ylabel("y: antall")
-        #plt.xlim([0, 180])
-        #plt.ylim([0, 10])
-        #plt.draw()
-
+        alfa_antall[alfa_particle.spredningsVinkel()[1]] += 1
+        
         for event in pygame.event.get():
             if(event.type == pygame.QUIT):
                 running = False
     pygame.quit()
-    plt.close()
+    
+    # The graph
+    plt.plot(spredningsvinkler, alfa_antall)
+    plt.title("Forholdet mellom antall utsendte alfapartikler og tilhørende spredningsvinkel", fontsize = 9)
+    plt.xlabel("x: vinkel (θ)")
+    plt.ylabel("y: antall")
+    plt.xlim([0, 180])
+    plt.ylim([0, 10])
+    plt.show()
 main()
